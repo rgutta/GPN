@@ -1,0 +1,196 @@
+﻿<ng-include src="'partials/mainMenu.html'"></ng-include>
+<div class="container-fluid container-separated-top">
+    <div class="row">
+        <div class="col-md-8 main">
+            <cc-grid cc-grid-editor="gridEditor"
+                     cc-grid-title="{{'Bookings.BookingHeading' | translate}}">
+                <div class="row constrain">
+                    <div class="col-md-12 table-header-form">
+                        <cc-date-range-picker start-config="{
+                                 'cc-id': 'inputStartDateFilter',
+                                 'cc-button-id': 'buttonStartDateFilter',
+                                 'ng-model': 'gridEditor.grid.dateFilters.startDateFilter',
+                                 'class': 'col-lg-3 col-md-4 col-sm-4 no-padding-left'
+                              }"
+                                              end-config="{
+                                 'cc-id': 'inputEndDateFilter',
+                                 'cc-button-id': 'buttonEndDateFilter',
+                                 'ng-model': 'gridEditor.grid.dateFilters.endDateFilter',
+                                 'class': 'col-lg-3 col-md-4 col-sm-4 no-padding-left'
+                              }">
+                            <div cc-start-date-picker></div>
+                            <div cc-end-date-picker></div>
+                        </cc-date-range-picker>
+
+                        <button id="buttonAddItemForGrid"
+                                class="btn btn-success pull-right"
+                                ng-click="openAddBookingsModal()"
+                                role="button"
+                                ng-disabled="gridEditor.showEditor">
+                            <i class="fa fa-plus"></i>
+                            <span translate="{{'Common.AddNewButtonText' | translate}}"></span>
+                        </button>
+                        
+                        <button class="btn btn-default" data-ng-click="gridEditor.grid.clearFilters()">
+                            {{'Common.ClearFilters' | translate}}
+                        </button>
+                    </div>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th data-ms-filter-by-column="Feature.Name"
+                                data-table-source="gridEditor.grid.entities"
+                                data-clear-filters="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.Feature"></span>
+                            </th>
+                            <th cc-column-sorter="Feature.ReleaseDate"
+                                cc-table-source="gridEditor.grid.entities"
+                                data-clear-sort="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.ReleaseDate"></span>
+                            </th>
+                            <th data-ms-filter-by-column="Site.Name"
+                                data-table-source="gridEditor.grid.entities"
+                                data-clear-filters="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.Site"></span>
+                            </th>
+                            <th cc-column-sorter="Start"
+                                cc-table-source="gridEditor.grid.entities"
+                                data-clear-sort="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.StartDate"></span>
+                            </th>
+                            <th cc-column-sorter="InclusiveEnd"
+                                cc-table-source="gridEditor.grid.entities"
+                                data-clear-sort="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.EndDate"></span>
+                            </th>
+                            <th cc-column-sorter="Term"
+                                cc-table-source="gridEditor.grid.entities"
+                                data-clear-sort="gridEditor.grid.isFilterCleared">
+                                <span translate="Bookings.Grid.Booking"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-ng-repeat="booking in gridEditor.grid.entities | filter: {omit: '!true'}"
+                            data-ng-click="gridEditor.grid.rowSelectionChange(booking, $index)"
+                            ng-class="{selected: $index === gridEditor.grid.selectedRowIndex}">
+                            <td>
+                                {{booking.Feature.Name}}
+                            </td>
+                            <td>
+                                {{booking.Feature.ReleaseDate | date:'mediumDate'}}
+                            </td>
+                            <td>
+                                {{booking.Site.Name}}
+                            </td>
+                            <td>
+                                {{booking.Start | date:'mediumDate'}}
+                            </td>
+                            <td>
+                                {{booking.InclusiveEnd | date:'mediumDate'}}
+                            </td>
+                            <td class="text-right">
+                                {{booking.Term | ccPercentage }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </cc-grid>
+        </div>
+
+        <div class="col-md-4 movie-details main">
+            <cc-error-alerter ng-model="errorAlerter">
+            </cc-error-alerter>
+            <cc-editor cc-form-name="bookingForm"
+                       cc-editor="gridEditor.editor"
+                       cc-editor-add-mode-title="{{'Bookings.Editor.TitleEditBooking' | translate}}"
+                       cc-editor-update-mode-title="{{'Bookings.Editor.TitleEditBooking' | translate}}"
+                       ng-show="gridEditor.showEditor">
+                <div class="form-group">
+                    <label id="labelFeature"
+                           class="control-label"
+                           translate="Bookings.Editor.Feature">
+                    </label>
+                    <p ng-bind="gridEditor.editor.entity.Feature.Name">
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label id="labelReleaseDate"
+                           class="control-label"
+                           translate="Bookings.Editor.ReleaseDate">
+                    </label>
+                    <p ng-bind="gridEditor.editor.entity.Feature.ReleaseDate | date:'mediumDate'">
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label id="labelRating"
+                           class="control-label"
+                           translate="Bookings.Editor.Rating">
+                    </label>
+                    <p ng-bind="gridEditor.editor.entity.Feature.Rating">
+
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label id="labelSite"
+                           class="control-label"
+                           translate="Bookings.Editor.Site">
+                    </label>
+                    <p ng-bind="gridEditor.editor.entity.Site.Name">
+                    </p>
+                </div>
+                <cc-date-range-picker start-config="{
+                                 'cc-id': 'inputBookingEditorStartDate',
+                                 'cc-button-id': 'inputBookingEditorStartDateButton',
+                                 'cc-name': 'startDate',
+                                 'ng-model': 'gridEditor.editor.entity.Start',
+                                 'required': 'true'
+                              }"
+                                      end-config="{
+                                 'cc-id': 'inputBookingEditorEndDate',
+                                 'cc-button-id': 'inputBookingEditorEndDateButton',
+                                 'cc-name': 'endDate',
+                                 'ng-model': 'gridEditor.editor.entity.InclusiveEnd'
+                              }">
+                    <div class="form-group">
+                        <label id="labelStartDate"
+                               class="control-label"
+                               cc-required-label>
+                            {{ 'Bookings.Editor.StartDate' | translate}}
+                        </label>
+                        <div cc-start-date-picker></div>
+                    </div>
+                    <div class="form-group">
+                        <label id="labelEndDate"
+                               class="control-label"
+                               translate="Bookings.Editor.EndDate">
+                        </label>
+                        <div cc-end-date-picker></div>
+                    </div>
+                </cc-date-range-picker>
+                <div class="form-group">
+                    <label id="labelBookingTerms"
+                           class="control-label"
+                           cc-required-label>
+                        {{ 'Bookings.Editor.BookingTerms' | translate }}
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="inputTerm"
+                           ng-model="gridEditor.editor.entity.Term"
+                           name="term"
+                           required
+                           cc-percentage="2"
+                           cc-max="1">
+                </div>
+                <div class="form-group">
+                    <span id="labelEditorTermErrorMaxIs100Percent" class="error" ng-show="bookingForm.term.$error.ccMax"
+                          translate="Common.Error.MaxRateIs100Percent">
+                    </span>
+                </div>
+            </cc-editor>
+        </div>
+    </div>
+</div>
+

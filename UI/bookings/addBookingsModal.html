@@ -1,0 +1,148 @@
+﻿<div class="modal-wide modal-height">
+    <div class="modal-dialog-booking">
+        <div class="modal-content modal-booking-font">
+            <div class="modal-header modal-header-booking">
+                <button class="close"
+                        aria-hidden="true"
+                        ng-click="$dismiss()">
+                    &times;
+                </button>
+                <h4 class="modal-title" translate="Bookings.AddBookingsModal.Title"></h4>
+            </div>
+            <div class="modal-body modal-body-booking modal-body-height">
+                <cc-error-alerter ng-model="errorAlerter">
+                </cc-error-alerter>
+                <ng-form name="addBookingsModalForm">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="inputAddBookingsModalFeatureTypeahead"
+                                   class="control-label">{{'Bookings.AddBookingsModal.Features' | translate}}</label>
+                            <div class="input-group">
+                                <input type="text"
+                                       id="inputAddBookingsModalFeatureTypeahead"
+                                       ng-model="featureSelector.selectedFeature"
+                                       placeholder="{{'Common.TypeaheadPlaceholder' | translate}}"
+                                       typeahead="feature as featureSelector.getFeatureNameAndYear(feature) for feature in featureSelector.features | filter:{Name: $viewValue}| orderBy:['-ReleaseYear','Name']"
+                                       class="form-control"
+                                       cc-focus="featureSelector.isFirstInputFocused"
+                                       typeahead-on-select="featureSelector.selectFeature($item)">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default green-btn-booking" ng-click="modal.openAddFeatureModal()" tabindex="-1">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="feature-results">
+                            <p class="clear-all-features">
+                                <a ng-click="featureSelector.unselectAllFeatures()">{{'Common.ClearAll' | translate}}</a>
+                            </p>
+                            <div ng-repeat="feature in featureSelector.selectedFeatures">
+                                <div class="list">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <img class="img-responsive poster" ng-src="{{ feature.PosterUrl }}" />
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <p class="title" ng-bind="featureSelector.getFeatureNameAndYear(feature)"></p>
+                                            <p class="description">
+                                                {{ feature.DurationMinutes }} min &middot; {{ feature.ReleaseDate | date:'mediumDate' }} &middot;
+                                                {{feature.Rating}}
+                                            </p>
+                                        </div>
+                                        <div class="col-xs-2 icon-middle">
+                                            <i class="fa fa-times icon-close" ng-click="featureSelector.unselectFeature($index)"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-12 booking-right">
+                            <h4 class="divider" translate="Bookings.AddBookingsModal.SelectSites"></h4>
+                            <div class="input-group">
+                                <cc-search-bar cc-id="addBookingsModalSearch"
+                                               placeholder="{{'Common.QuickFindPlaceholder' | translate}}"
+                                               ng-model="siteSelector.siteSearchText">
+                                </cc-search-bar>
+                            </div>
+                            <p>
+                                <a ng-click="siteSelector.selectAllSites()" translate="Bookings.AddBookingsModal.SelectAllSitesButton"></a>
+                                &middot;
+                                <a ng-click="siteSelector.clearAllSites()" translate="Bookings.AddBookingsModal.ClearSitesButton"></a>
+                            </p>
+                            <div class="checkbox-left">
+                                <div ng-repeat="siteCheckBox in siteSelector.siteCheckBoxes | filter:siteSelector.siteSearchFilter track by siteCheckBox.site.Id"
+                                     ng-click="siteSelector.toggleSiteCheckBox($event, siteCheckBox)">
+                                    <div class="checkbox-style">
+                                        <input id="siteCheckBox{{siteCheckBox.site.Id}}" class="css-checkbox" type="checkbox" ng-model="siteCheckBox.isChecked" />
+                                        <label for="siteCheckBox{{siteCheckBox.site.Id}}" name="siteCheckBoxLabel{{siteCheckBox.site.Id}}" class="css-label" ng-bind="siteCheckBox.site.Name"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <cc-date-range-picker start-config="{
+                                 'cc-id': 'addBookingsModalInputStartDate',
+                                 'cc-button-id': 'addBookingsModalButtonStartDate',
+                                 'ng-model': 'modal.startDate',
+                                 'required': 'true'
+                              }"
+                                              end-config="{
+                                 'cc-id': 'addBookingsModalInputEndDate',
+                                 'cc-button-id': 'addBookingsModalButtonEndDate',
+                                 'ng-model': 'modal.endDate'
+                              }">
+                            <div class="col-xs-6 col-sm-6 col-lg-6 no-padding-left">
+                                <label class="control-label"
+                                       cc-required-label>
+                                    {{ 'Bookings.AddBookingsModal.StartDateLabel' | translate }}
+                                </label>
+                                <div cc-start-date-picker></div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-lg-6 no-padding-right">
+                                <label class="control-label" translate="Bookings.AddBookingsModal.EndDateLabel"></label>
+                                <div cc-end-date-picker></div>
+                            </div>
+                        </cc-date-range-picker>
+
+                        <div class="col-lg-12 col-xs-12 col-sm-12  margin-top-terms">
+                            <div class="form-group">
+                                <label for="addBookingsModalTermInput"
+                                       class="control-label"
+                                       cc-required-label>
+                                    {{ 'Bookings.AddBookingsModal.BookingTermsLabel' | translate}}
+                                </label>
+                                <input class="form-control"
+                                       id="addBookingsModalTermInput"
+                                       name="term"
+                                       ng-model="modal.term"
+                                       required
+                                       cc-percentage="2"
+                                       cc-max="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <span id="labelBookingsModalTermErrorMaxIs100Percent" class="error" ng-show="addBookingsModalForm.term.$error.ccMax"
+                                  translate="Common.Error.MaxRateIs100Percent">
+                            </span>
+                        </div>
+                    </div>
+                </ng-form>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <button class="btn btn-primary"
+                            id="addBookingModalBookButton"
+                            ng-click="modal.submitBookings()"
+                            translate="Bookings.AddBookingsModal.SubmitBookings"
+                            ng-disabled="!modal.isAllowedToSubmitBookings() || !addBookingsModalForm.$valid"></button>
+                    <button id="addBookingModalCancelButton" class="btn btn-default" ng-click="$dismiss()" translate="Common.EditorCancel"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
